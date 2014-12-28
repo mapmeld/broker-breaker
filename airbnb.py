@@ -29,7 +29,6 @@ def get_listings(grid):
     url = 'https://www.airbnb.com' + rental[rental.find('data-url') + 10 : ]
     url = url[ : url.find('"') ]
     listing["url"] = url
-    print(url)
 
     # check URL of listing for disqualifiers
     scrape = urllib2.urlopen(url).read().lower().replace('  ', ' ')

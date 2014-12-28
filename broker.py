@@ -5,15 +5,19 @@
 # probably against ToS for both websites, oops
 
 from datetime import datetime
+import urllib2, json
 
 import airbnb, padmapper, neighborhoods
 
 the_good_ones = []
 
-def get_commute_time(latlng):
+def get_commute_time(location_data):
   # call Google Directions API with transit
   # return value in minutes
-  return 0
+  my_url = 'https://maps.googleapis.com/maps/api/directions/json?mode=transit&departure_time=1419862179&origin=' + str(location_data["lat"]) + "," + str(location_data["lng"]) + '&destination=25%20W%2053rd%20St,%20NYC&api_key=AIzaSyBekR41_LoUo5X_FCijNZgQDgdyVofNIB0'
+  jdata = urllib2.urlopen(my_url).read()
+  response = json.loads(jdata)
+  return int(response["routes"][0]["legs"][0]["duration"]["value"] / 60)
 
 def __main__():
   # get start date from user
