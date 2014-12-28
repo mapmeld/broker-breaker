@@ -4,17 +4,24 @@
 # screen-scraper, so probably going to break continually
 # probably against ToS, oops
 
+from datetime import datetime
 import urllib2, json
 
-def get_listings(grid):
-  south = grid[0]
-  west = grid[1]
-  north = grid[2]
-  east = grid[3]
+def get_listings(grid, start_date):
+  south = str(grid[0])
+  west = str(grid[1])
+  north = str(grid[2])
+  east = str(grid[3])
+  if start_date.month == 12:
+    end_date = datetime(start_date.year + 1, 1, start_date.day)
+  else:
+    end_date = datetime(start_date.year, start_date.month + 1, start_date.day)
+  start_date = str(start_date.month) + '%2F' + str(start_date.day) + '%2F' + str(start_date.year)
+  end_date = str(end_date.month) + '%2F' + str(end_date.day) + '%2F' + str(end_date.year)
 
   listings = []
 
-  jdata = urllib2.urlopen('https://www.airbnb.com/search/search_results?page=1&location=Bedford-Stuyvesant%2C+Brooklyn%2C+NY%2C+United+States&checkin=01%2F01%2F2015&checkout=02%2F01%2F2015&price_min=1000&price_max=1365').read()
+  jdata = urllib2.urlopen('https://www.airbnb.com/search/search_results?page=1&location=New+York%2C+NY%2C+United+States&checkin=' + start_date + '&checkout=' + end_date + '&price_min=1000&price_max=1365&sw_lat='+ south + '&ne_lat='+ north + '&sw_lng=' + west + '&ne_lng=' + east).read()
   results = json.loads(jdata)["results"].lower().replace('  ', ' ').split('col-sm-12')
 
   for rental in results:
@@ -32,7 +39,7 @@ def get_listings(grid):
 
     # check URL of listing for disqualifiers
     scrape = urllib2.urlopen(url).read().lower().replace('  ', ' ')
-    disqualifiers = ['women only', 'hipster']
+    disqualifiers = ['women only', 'hipster', 'cats', 'dogs']
     disqualified = False
     for disqualifier in disqualifiers:
       if scrape.find(disqualifier.lower()) > -1:
