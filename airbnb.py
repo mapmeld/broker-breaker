@@ -39,7 +39,7 @@ def get_listings(grid, start_date):
 
     # check URL of listing for disqualifiers
     scrape = urllib2.urlopen(url).read().lower().replace('  ', ' ')
-    disqualifiers = ['women only', 'hipster', 'cats', 'dogs']
+    disqualifiers = ['women only', 'hipster', ' cat ', 'cats', 'dog', 'dogs']
     disqualified = False
     for disqualifier in disqualifiers:
       if scrape.find(disqualifier.lower()) > -1:

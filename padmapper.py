@@ -31,7 +31,7 @@ def get_listings(grid):
     scrape = scrape.lower().replace('  ', ' ')
 
     # disqualifiers
-    disqualifiers = ['12 months', 'women only', 'hipster', 'cats', 'dogs']
+    disqualifiers = ['12 months', 'women only', 'hipster', 'posting has been deleted']
     disqualified = False
     for disqualifier in disqualifiers:
       if scrape.find(disqualifier.lower()) > -1:
