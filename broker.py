@@ -1,79 +1,87 @@
 # broker.py
+# GPLv3+ licensed by Nick Doiron
 # scan Airbnb and PadMapper for relevant sublets in New York City area
 # screen-scraper, so probably going to break continually
 # probably against ToS for both websites, oops
 
 from datetime import datetime
 
+import airbnb, padmapper, neighborhoods
+
 the_good_ones = []
 
 def get_commute_time(latlng):
   # call Google Directions API with transit
+  # return value in minutes
   return 0
-
-def get_neighborhood(latlng):
-  # do point-in-polygon on neighborhoods GeoJSON
-  return "Bushwick"
-
-def read_airbnb_location():
-  # filter out airbnbs without reviews
-
-  return [lat, lng]
-
-def read_padmapper_location():
-  return [lat, lng]
-
-def read_sublet(source, body, url):
-  # search for filtering keywords
-
-  # get location from listings
-  if source == "Airbnb":
-    location_data = read_airbnb_location()
-  elif source == "PadMapper":
-    location_data = read_padmapper_location()
-
-  # get neighborhood name from GeoJSON
-  neighborhood = get_neighborhood(location_data)
-
-  # get commute time of successful listings
-  commute_time = get_commute_time(location_data)
-
-  # if everything still looks good, add it to the good ones
-  the_good_ones << { url: url, neighborhood: neighborhood, commute: commute_time, latlng: location_data }
 
 def __main__():
   # get start date from user
-  start_date = input('When are you moving in? MM/DD')
+  start_date = '01/01'
 
   # parse start date
   month_day = start_date.split('/')
-  start_date = datetime(2014, int(month_day[0]), int(month_day[1]))
+  start_date = datetime(2015, int(month_day[0]), int(month_day[1]))
 
-  # make search grid (currently four areas with more reasonable prices)
+  # define previously-visited neighborhoods
+  old_neighborhoods = []
+
+  # define search areas (currently one neighborhood)
+  south = 40.68696
+  west = -73.96839
+  north = 40.70161
+  east = -73.94267
+
   passes = [
-    [lat1, lng1],
-    [lat2, lng2],
-    [lat3, lng3],
-    [lat4, lng4]
+    [south, west, north, east],
+    # [south2, west2, north2, east2]
   ]
 
-  # search Airbnb.com/sublet for one month
-  # filter by price of $1,000 - $1,350
-  # do all high-zoom passes to get the most results
   for p in passes:
-    # get listings from search
-    for listing in listings:
-      read_sublet("Airbnb", body, url)
+    listings = []
 
-  # search PadMapper for sublets
-  # filter by price of $1,000 - $1,350
-  # do all high-zoom passes to get the most results
-  for p in passes:
-    # get listings from search
+    # search Airbnb.com/sublet for one month
+    # filter by price of $1,000 - $1,350
+    # do all high-zoom passes to get the most results
+    listings += airbnb.get_listings(p)
+
+    # search PadMapper for sublets
+    # filter by price of $1,000 - $1,350
+    # do all high-zoom passes to get the most results
+    listings += padmapper.get_listings(p)
+
+    # filter all listings into just the good ones
     for listing in listings:
-      read_sublet("PadMapper", body, url)
+      location_data = listing["location_data"]
+
+      # get start date - compare to user start date
+      # could add some flexibility
+      if (listing["start"] is not None) and (start_date > listing["start"]):
+        continue
+
+      # get neighborhood name from GeoJSON
+      neighborhood = neighborhoods.find_neighborhood(location_data)
+
+      # don't recycle neighborhoods
+      if neighborhood in old_neighborhoods:
+        continue
+
+      # get commute time of successful listings
+      commute_time = get_commute_time(location_data)
+
+      # if everything still looks good, add it to the good ones
+      if (commute_time < 60):
+        good_listing = {}
+        good_listing["url"] = listing["url"]
+        good_listing["start"] = listing["start"]
+        good_listing["neighborhood"] = neighborhood
+        good_listing["commute"] = commute_time
+        good_listing["latlng"] = [location_data["lat"], location_data["lng"]]
+        the_good_ones.append(good_listing)
 
   # do some sorting on the_good_ones ?
 
   # output the listings
   print(the_good_ones)
+
+__main__()

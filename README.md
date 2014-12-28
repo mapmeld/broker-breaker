@@ -28,6 +28,17 @@ As I developed a search process, I began thinking about the most inefficient par
 - deciding which neighborhoods to look into
 - MOST inefficient: finding, comprehending, researching, and evaluating these factors visually, as a human
 
+## Install and Run
+
+    pip install shapely python-dateutil
+    python broker.py
+
+
+## Neighborhood data
+
+The NYC neighborhoods GeoJSON is from PediaCities: metadata and downloads available at
+http://catalog.opendata.city/dataset/pediacities-nyc-neighborhoods
+
 ## License
 
 GPL v3+
