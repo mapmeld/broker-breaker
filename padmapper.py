@@ -29,14 +29,13 @@ def get_listings(grid):
       true_url = scrape[ scrape.find('url=') + 4 : scrape.rfind('"') ]
       scrape = urllib2.urlopen(true_url).read()
     scrape = scrape.lower().replace('  ', ' ')
-    print(scrape)
 
     # disqualifiers
     disqualifiers = ['12 months', 'women only', 'hipster']
     disqualified = False
     for disqualifier in disqualifiers:
       if scrape.find(disqualifier.lower()) > -1:
-        print('found disqualified')
+        print('found disqualifying phrase')
         disqualified = True
         break
     if disqualified:

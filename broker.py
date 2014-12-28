@@ -57,6 +57,7 @@ def __main__():
       # get start date - compare to user start date
       # could add some flexibility
       if (listing["start"] is not None) and (start_date > listing["start"]):
+        print("found rental opening too early")
         continue
 
       # get neighborhood name from GeoJSON
@@ -64,6 +65,7 @@ def __main__():
 
       # don't recycle neighborhoods
       if neighborhood in old_neighborhoods:
+        print("found rental in one of your old neighborhoods")
         continue
 
       # get commute time of successful listings
